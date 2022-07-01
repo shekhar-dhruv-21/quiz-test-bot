@@ -1,8 +1,6 @@
-# SampleTelegramQuiz
+# Telegram Quiz Bot
 
-Sample of Telegram Quiz in Python
-
-![Alt text](splash.png?raw=true 'World Capitals Quiz')
+Telegram Quiz Bot in Python
 
 ### Table of Contents
 
