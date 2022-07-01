@@ -1,3 +1,6 @@
+from telegram import InlineKeyboardButton
+from typing import Union, List
+import telegram_bot
 from _model import *
 import telegram
 from telegram.ext import (
@@ -16,10 +19,15 @@ import pyfiglet
 import logging
 import logging.config
 import os
-
+import json
 from dotenv import load_dotenv, find_dotenv
 
 load_dotenv(find_dotenv())
+
+with open('questions.json', 'r') as json_file:
+    json_load = json.load(json_file)
+
+data = json_load['questions']
 
 
 def get_chat_id(update, context):
@@ -37,7 +45,6 @@ def get_chat_id(update, context):
 
 def get_user(update):
     user: User = None
-
     _from = None
 
     if update.message is not None:
@@ -62,17 +69,17 @@ def start_command_handler(update, context):
     add_typing(update, context)
 
     quiz_question = QuizQuestion()
-    quiz_question.question = "How many days were in Feb month of 2020?"
-    quiz_question.answers = ["28", "29", "30"]
-    quiz_question.correct_answer_position = 1
-    quiz_question.correct_answer = "28"
-
-    add_quiz_question(update, context, quiz_question)
+    for x in data:
+        quiz_question.question = x['question']
+        quiz_question.answers = x['answers']
+        quiz_question.correct_answer_position = x['correctIndex']
+        quiz_question.correct_answer = "28"
+        add_quiz_question(update, context, quiz_question)
 
 
 def help_command_handler(update, context):
-    """Send a message when the command /help is issued."""
-    update.message.reply_text("Type /start")
+    """Send a message when the command /help is issued. """
+    update.message.reply_text("Type 😄 /start")
 
 
 def new_member(update, context):
@@ -152,7 +159,7 @@ def add_quiz_question(update, context, quiz_question):
         options=quiz_question.answers,
         type=Poll.QUIZ,
         correct_option_id=quiz_question.correct_answer_position,
-        open_period=5,
+        open_period=25,
         is_anonymous=True,
         explanation="Well, honestly that depends on what you eat",
         explanation_parse_mode=telegram.ParseMode.MARKDOWN_V2,
@@ -179,20 +186,17 @@ def get_text_from_message(update):
 
 def get_answer(update):
     answers = update.poll.options
-
     ret = ""
 
     for answer in answers:
         if answer.voter_count == 1:
             ret = answer.text
-
     return ret
 
 
 # determine if user answer is correct
 def is_answer_correct(update):
     answers = update.poll.options
-
     ret = False
     counter = 0
 
@@ -201,7 +205,6 @@ def is_answer_correct(update):
             ret = True
             break
         counter = counter + 1
-
     return ret
 
 
@@ -223,7 +226,6 @@ def main():
     # command handlers
     dp.add_handler(CommandHandler("help", help_command_handler))
     dp.add_handler(CommandHandler("start", start_command_handler))
-    dp.add_handler(CommandHandler("sd", help_command_handler))
     dp.add_handler(CommandHandler("sjd", start_command_handler))
 
     # message handler
@@ -259,7 +261,7 @@ def main():
         logging.info(f"Start webhook mode on port {DefaultConfig.PORT}")
     else:
         updater.start_polling()
-        logging.info(f"Start polling mode")
+        logging.info(f"Started.......")
 
     updater.idle()
 
@@ -281,7 +283,7 @@ class DefaultConfig:
 
 
 if __name__ == "__main__":
-    ascii_banner = pyfiglet.figlet_format("S J DHRUV")
+    ascii_banner = pyfiglet.figlet_format("SHEKHAR J DHRUV")
     print(ascii_banner)
 
     # Enable logging

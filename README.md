@@ -2,6 +2,8 @@
 
 Telegram Quiz Bot in Python
 
+![Alt text](splash.png?raw=true 'World Capitals Quiz')
+
 ### Table of Contents
 
 - [Setup](#setup)
