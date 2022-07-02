@@ -187,7 +187,7 @@ def get_text_from_message(update):
 def get_answer(update):
     answers = update.poll.options
     ret = ""
-
+    print("answers--->",answers)
     for answer in answers:
         if answer.voter_count == 1:
             ret = answer.text
